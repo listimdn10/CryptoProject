@@ -1,0 +1,121 @@
+  /* General styles */
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    background: linear-gradient(to left, rgb(5, 3, 3), rgb(24, 75, 78));
+}
+
+.navbar {
+    width: 200px;
+    background-color: #333;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 20px;
+    min-height: 100%;
+}
+
+.navbar a {
+    color: white;
+    padding: 10px;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 49px;
+}
+
+.navbar a:hover {
+    background-color: #575757;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    display: flex; 
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+h1 {
+    text-align: center;
+    color: #a4fca7;
+    font-size: 3.5em;
+    margin-bottom: 20px;
+}
+
+form {
+    background: #fff;
+    padding: 5%;
+    border-radius: 18px;
+    box-shadow: 0 0 15px rgb(248, 248, 248);
+    width: 600px; 
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 40px;
+}
+
+input[type="password"],
+input[type="text"],
+input[type="file"],
+select,
+button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #0e1314;
+    border-radius: 9px;
+    box-sizing: border-box;
+    font-size: 30px;
+}
+
+button {
+    background-color: #072af4;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 30%;
+    position: absolute;
+    right: 70px;    
+    bottom: 10px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-left: 5px solid #f5c6cb;
+    border-radius: 4px;
+}
+
+a {
+    display: inline-block;
+    margin-top: 20px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #01d5ff;
+}

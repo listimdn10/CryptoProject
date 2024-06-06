@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Search PDF{% endblock %}
+
+{% block content %}
+<h1>Search PDF</h1>
+<form method="post" action="/search">
+    <label for="search_type">Search by:</label>
+    <select id="search_type" name="search_type" required>
+        <option value="name">Name</option>
+        <option value="date">Date (YYYY-MM-DD)</option>
+    </select>
+    <label for="query">Enter query:</label>
+    <input type="text" id="query" name="query" required>
+    <button type="submit">Search</button>
+    <ul>
+        <label class="searchresult">Search Results</label>
+
+        {% for file in files %}
+            <li>{{ file.filename }} - {{ file.uploadDate }}</li>
+        {% endfor %}
+    </ul>
+</form>
+{% endblock %}

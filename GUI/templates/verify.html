@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Verify PDF{% endblock %}
+
+{% block content %}
+<h1>Verify PDF</h1>
+<form id="verify-form" method="post" action="/verify" enctype="multipart/form-data">
+    <label for="file-input">Select a file to verify:</label>
+    <input type="file" id="file-input" name="pdf_file" accept="application/pdf" required>
+    <input type="text" name="filename" id="filename" hidden>
+    <button type="submit">Verify</button>
+</form>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% endblock %}
