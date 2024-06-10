@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Search PDF{% endblock %}
+
+{% block content %}
+<h1>Search PDF</h1>
+<form method="post">
+    Search by:
+    <select name="search_type">
+        <option value="name">Name</option>
+        <option value="date">Date</option>
+    </select><br>
+    Query: <input type="text" name="query"><br>
+    <input type="submit" value="Search">
+</form>
+
+<h2>Search Results</h2>
+<ul>
+    {% for file in files %}
+        <li>{{ file.filename }} - ID: {{ file._id }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

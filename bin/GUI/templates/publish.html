@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Publish PDF{% endblock %}
+
+{% block content %}
+<h1>Publish PDF</h1>
+<form method="post" enctype="multipart/form-data">
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password" required><br><br>
+    <label for="Account">Account:</label>
+    <input type="text" name="account" id="account" required><br><br>
+    <label for="pdf_file">Choose PDF file:</label>
+    <input type="file" name="pdf_file" id="pdf_file" accept="application/pdf" required><br><br>
+
+    <button type="submit">Publish</button>
+</form>
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% endblock %}

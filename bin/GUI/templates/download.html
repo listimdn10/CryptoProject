@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Download Signed PDF{% endblock %}
+
+{% block content %}
+<h1>Download Signed PDF</h1>
+<form method="post" action="/download">
+    <label for="file_id">Select a signed file to download:</label>
+    <select name="file_id" id="file_id">
+        {% for file in files %}
+            <option value="{{ file._id }}">{{ file.filename }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">Download</button>
+</form>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+{% endblock %}

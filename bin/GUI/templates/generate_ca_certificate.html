@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Generate CA Key and Self-Signed Certificate{% endblock %}
+
+{% block content %}
+<h1>Generate CA Key and Self-Signed Certificate</h1>
+<form method="post">
+    CA Name: <input type="text" name="ca_name"><br>
+    Country: <input type="text" name="ca_country"><br>
+    State: <input type="text" name="ca_state"><br>
+    Locality: <input type="text" name="ca_locality"><br>
+    Organization: <input type="text" name="ca_org"><br>
+    Organizational Unit: <input type="text" name="ca_org_unit"><br>
+    Email: <input type="text" name="ca_email"><br>
+    <input type="submit" value="Generate">
+</form>
+{% endblock %}

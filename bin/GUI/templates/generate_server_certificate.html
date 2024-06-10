@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Server Key and Certificate{% endblock %}
+
+{% block content %}
+<h1>Generate Server Key and Certificate</h1>
+<form method="post">
+    Server Name: <input type="text" name="server_name"><br>
+    Country: <input type="text" name="server_country"><br>
+    State: <input type="text" name="server_state"><br>
+    Locality: <input type="text" name="server_locality"><br>
+    Organization: <input type="text" name="server_org"><br>
+    Organizational Unit: <input type="text" name="server_org_unit"><br>
+    Email: <input type="text" name="server_email"><br>
+    <input type="submit" value="Generate">
+</form>
+{% endblock %}
