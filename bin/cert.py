@@ -39,12 +39,12 @@ def generate_ca_key_and_self_signed_certificate():
         print(e.stderr.decode())  
 
 # Function to generate server key and certificate
-def generate_server_key_and_certificate(): 
+def generate_server_key_and_certificate(certname):
     try:
         genkey_command = 'openssl genpkey -algorithm dilithium3 -out dilithium3_srv.key -provider oqsprovider'
         subprocess.run(genkey_command, shell=True, check=True)
 
-        req_command = 'openssl req -new -key dilithium3_srv.key -out dilithium3_srv.csr -nodes -subj "/CN=UIT" -provider oqsprovider -config "C:\\Program Files\\Common Files\\SSL\\openssl.cnf"'
+        req_command = f'openssl req -new -key dilithium3_srv.key -out dilithium3_srv.csr -nodes -subj "/CN={certname}" -provider oqsprovider -config "C:\\Program Files\\Common Files\\SSL\\openssl.cnf"'
         subprocess.run(req_command, shell=True, check=True)
 
         sign_command = 'openssl x509 -req -in dilithium3_srv.csr -out dilithium3_srv.crt -CA root_CA.crt -CAkey root_CA.key -CAcreateserial -days 365 -provider oqsprovider'
@@ -103,9 +103,9 @@ def verify_file_in_db():
                     with open("temp_public_key.pub", "w") as pub_file:
                         pub_file.write(public_key)
                     if verifySignature("temp_public_key.pub", file_path, signature_base64):
-                        print("Signature verified successfully.")
+                        print("file verified successfully.")
                     else:
-                        print("Signature verification failed.")
+                        print("file verification failed.")
                     os.remove("temp_public_key.pub")
                 else:
                     print("Public key or signature not found in metadata.")
@@ -119,14 +119,14 @@ def verify_file_in_db():
 
 
 # Function to create QR watermark
-def makeWatermark(account):
+def makeWatermark(account, pdf_filename):
     watermarkName = "qr.pdf"
     doc = canvas.Canvas(watermarkName)
     
     qr = qrcode.QRCode(version=2, error_correction=qrcode.constants.ERROR_CORRECT_H, box_size=10, border=4)
     now = dt.now()
     dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-    qr.add_data(f"Signed by: {account}\nDay/time: {dt_string}")
+    qr.add_data(f"Signed by: {account}\nDay/time: {dt_string}\nFile: {pdf_filename}")
     qr.make(fit=True)
     
     img = qr.make_image(fill_color="black", back_color="white")
@@ -175,13 +175,13 @@ def upload_to_gridfs(filepath, public_key, signature):
 
     now = datetime.datetime.now()
     metadata = {
-        "author": "admin",
+        "author": "chinhphu",
         "public_key": public_key,
         "signature": signature
     }
 
     file_id = fs.put(file_data, filename=filename, metadata=metadata)
-
+    print(f"File uploaded to GridFS with id: {file_id}")
 
 # Function to download PDF from MongoDB GridFS
 def download_from_gridfs(file_id, download_path):
@@ -237,34 +237,72 @@ def upload_certificate_to_db(cert_path, cert_name):
     print(f"Certificate {cert_name} uploaded to database successfully.")
 
 
+
+# Function to verify public key
+# Function to verify public key
+def verifyPublicKey(pdf_file_path):
+    # Extract the public key from the certificate
+    extracted_pubkey_file = "extracted_pubkey.pub"
+    detachPubKeyFromCert(cert_file, extracted_pubkey_file)
+
+    with open(extracted_pubkey_file, 'r') as extracted_file:
+        extracted_pubkey = extracted_file.read().strip()
+
+    # Fetch the file data from the database
+    filename = os.path.basename(pdf_file_path)
+    file_data = fs.find_one({"filename": filename})
+
+    if file_data and file_data.metadata and "public_key" in file_data.metadata:
+        stored_pubkey = file_data.metadata["public_key"].strip()
+    else:
+        print("Public key not found in metadata.")
+        os.remove(extracted_pubkey_file)
+        return 0
+
+    os.remove(extracted_pubkey_file)
+
+    if extracted_pubkey == stored_pubkey:
+        print("Đây là public key của chính phủ")
+        return 1
+    else:
+        print("Đây không phải public key của chính phủ")
+        return 0
+
 def main():
-    generate_ca_key_and_self_signed_certificate()
+    
     while True:
-        print("1. create server key-cert")
-        print("2. Sign pdf")
-        print("3. Verify")
-        print("4. upload to dtb")
-        print("5. Download PDF")
-        print("6. find by name")
-        print("7. find by date YYYY-D-M")
+        print("=================")
+        print("0. create CA's key and self signed cert")
+        print("1. create goverment key and certificate")
+        print("2. Sign official document")
+        print("3. Verify document")
+        print("4. upload to database")
+        print("5. Download signed document")
+        print("6. find official document by name")
+        print("7. find official document by date YYYY-MM-DD")
         print("8. Exit")
+        print("=================")
         choice = input("Enter your choice: ")
-        if choice == '1':
-            password = input("Nhập mật khẩu nếu bạn có quyền admin: ")
+        if choice == '0':
+            password = input("Nhập mật khẩu nếu bạn có quyền chính phủ: ")
             if password == '@123admin':
-                generate_server_key_and_certificate()
-                public_key = detachPubKeyFromCert(cert_file, pubkey_file)
+                 generate_ca_key_and_self_signed_certificate()
+        elif choice == '1':
+            password = input("Nhập mật khẩu nếu bạn có quyền chính phủ: ")
+            if password == '@123admin':
                 cert_name = input("Nhập tên cho Certificate máy chủ: ")
+                generate_server_key_and_certificate(cert_name)
+                public_key = detachPubKeyFromCert(cert_file, pubkey_file)
                 upload_certificate_to_db("dilithium3_srv.crt", cert_name)
         elif choice == '2':
-            password = input("Nhập mật khẩu nếu bạn có quyền admin: ")
+            password = input("Nhập mật khẩu nếu bạn có quyền chính phủ: ")
             if password == '@123admin':
                 
                 pdf_file = select_pdf_file()
                 if pdf_file:
                     private_key =  "dilithium3_srv.key"
                     signature_file = "signature"
-                    watermark = makeWatermark("nhunhi")  
+                    watermark = makeWatermark("chinhphu", os.path.basename(pdf_file))  
                     signed_pdf = makePdf(pdf_file, watermark)
                     # Call signData and check if signing was successful
                     if signData(private_key, signed_pdf, signature_file):
@@ -273,14 +311,20 @@ def main():
                     else:
                         print("Signing process failed. Please try again.")
                         return
-                        
+        
         elif choice == '3':
-            verify_file_in_db()
+            pdf_file = select_pdf_file()
+            if pdf_file:
+                verifyPubkey = verifyPublicKey(pdf_file)
+                if verifyPubkey == 1:
+                    verify_file_in_db()
+                else:
+                    print("Verification failed.")
 
         elif choice == '4':
-            password = input("Nhập mật khẩu nếu bạn có quyền admin: ")
+            password = input("Nhập mật khẩu nếu bạn có quyền chính phủ: ")
             if password == '@123admin':
-                
+
                 signed_pdf = select_pdf_file()
                 with open("signature", "rb") as sig_file:
                     signature = base64.b64encode(sig_file.read()).decode("utf-8")
